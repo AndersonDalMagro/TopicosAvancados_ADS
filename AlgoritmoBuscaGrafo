@@ -1,0 +1,30 @@
+from collections import deque
+
+grafo = {
+    'A': ['B', 'C'],
+    'B': ['D', 'E'],
+    'C': ['A','F'],
+    'D': ['B'],
+    'E': ['B'],
+    'F': ['C']
+}
+
+def bfs(grafo, inicio, objetivo):
+    fila = deque([inicio])
+    visitados = set()
+    
+    while fila:
+        no = fila.popleft()
+        if no == objetivo:
+            return f"Objetivo {objetivo} encontrado!"
+        
+        visitados.add(no)
+        
+        for vizinho in grafo[no]:
+            if vizinho not in visitados:
+                fila.append(vizinho)
+
+    return "Objetivo não encontrado."
+
+resultado = bfs(grafo, 'A', 'F')
+print(resultado)
