@@ -1,0 +1,41 @@
+import heapq
+
+grafo = {
+    'A': ['B', 'C'],
+    'B': ['D', 'E'],
+    'C': ['A','F'],
+    'D': ['B'],
+    'E': ['B'],
+    'F': ['C']
+}
+
+heuristica = {
+    'A': 5,
+    'B': 3,
+    'C': 2,
+    'D': 4,
+    'E': 1,
+    'F': 0
+}
+
+def greedy_best_first_search(grafo, heuristica, inicio, objetivo):
+    fila_prioridade = []
+    heapq.heappush(fila_prioridade, (heuristica[inicio], inicio))
+    visitados = set()
+
+    while fila_prioridade:
+        _, no_atual = heapq.heappop(fila_prioridade)
+
+        if no_atual == objetivo:
+            return f"Objetivo {objetivo} encontrado!"
+
+        visitados.add(no_atual)
+
+        for vizinho in grafo[no_atual]:
+            if vizinho not in visitados:
+                heapq.heappush(fila_prioridade, (heuristica[vizinho], vizinho))
+
+    return "Objetivo não encontrado."
+
+resultado = greedy_best_first_search(grafo,heuristica, 'A', 'F')
+print(resultado)
