@@ -1,0 +1,51 @@
+import heapq
+
+grafo = {
+    'A': ['B', 'C'],
+    'B': ['D', 'E'],
+    'C': ['A','F'],
+    'D': ['B'],
+    'E': ['B'],
+    'F': ['C']
+}
+
+heuristica = {
+    'A': 5,
+    'B': 3,
+    'C': 2,
+    'D': 4,
+    'E': 1,
+    'F': 0
+}
+
+custos = {
+    ('A','B'): 1,
+    ('A','C'): 4,
+    ('B','D'): 2,
+    ('B','E'): 5,
+    ('C','F'): 3,
+}
+
+def a_star_search(grafo, heuristica, custos, inicio, objetivo):
+    fila_prioridade = []
+    heapq.heappush(fila_prioridade, (heuristica[inicio], 0, inicio))  # f(n), g(n), nó
+    visitados = set()
+
+    while fila_prioridade:
+        _, custo_atual, no_atual = heapq.heappop(fila_prioridade)
+
+        if no_atual == objetivo:
+            return f"Objetivo {objetivo} encontrado!"
+
+        visitados.add(no_atual)
+
+        for vizinho in grafo[no_atual]:
+            if vizinho not in visitados:
+                novo_custo = custo_atual + custos.get((no_atual, vizinho), 1)  # g(n)
+                prioridade = novo_custo + heuristica[vizinho]  # f(n) = g(n) + h(n)
+                heapq.heappush(fila_prioridade, (prioridade, novo_custo, vizinho))
+
+    return "Objetivo não encontrado."
+
+resultado = a_star_search(grafo,heuristica, custos, 'A', 'F')
+print(resultado)
