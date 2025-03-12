@@ -1,0 +1,87 @@
+import heapq  # Importa a biblioteca heapq para utilizar a fila de prioridade (min-heap)
+
+def a_star_search(grafo, heuristica, custos, inicio, objetivo):
+    """
+    Implementação do algoritmo A* para encontrar o caminho mais curto de um nó inicial até um objetivo.
+    
+    :param grafo: Dicionário representando o grafo (cada nó tem uma lista de vizinhos)
+    :param heuristica: Dicionário com valores heurísticos (estimativa de custo até o objetivo)
+    :param custos: Dicionário com custos das arestas (ex: {("A", "B"): 1})
+    :param inicio: Nó de partida
+    :param objetivo: Nó de destino
+    :return: Caminho ótimo como string ou mensagem indicando que o objetivo não foi encontrado
+    """
+
+    # Inicializa a fila de prioridade (min-heap), armazenando (prioridade, custo_acumulado, nó_atual, caminho_percorrido)
+    fila_prioridade = []
+    
+    # Insere o nó inicial na fila de prioridade com sua heurística e custo inicial 0
+    heapq.heappush(fila_prioridade, (heuristica[inicio], 0, inicio, [inicio]))
+
+    # Conjunto para armazenar nós já visitados (evita reprocessamento)
+    visitados = set()
+
+    # Enquanto houver nós na fila de prioridade
+    while fila_prioridade:
+        # Remove o nó com menor prioridade (menor f(n) = g(n) + h(n))
+        _, custo_atual, no_atual, caminho = heapq.heappop(fila_prioridade)
+
+        # Se o nó atual for o objetivo, retorna o caminho encontrado
+        if no_atual == objetivo:
+            return f"Objetivo '{objetivo}' encontrado! Caminho: {' → '.join(caminho)}"
+
+        # Se o nó já foi visitado, pula a iteração para evitar processamento desnecessário
+        if no_atual in visitados:
+            continue
+
+        # Marca o nó atual como visitado
+        visitados.add(no_atual)
+
+        # Explora os vizinhos do nó atual
+        for vizinho in grafo[no_atual]:
+            if vizinho not in visitados:
+                # Calcula o novo custo acumulado (g(n))
+                novo_custo = custo_atual + custos.get((no_atual, vizinho), 1)  # Se não houver custo definido, assume 1
+
+                # Calcula a prioridade (f(n) = g(n) + h(n))
+                prioridade = novo_custo + heuristica[vizinho]
+
+                # Cria um novo caminho estendendo o atual
+                novo_caminho = caminho + [vizinho]
+
+                # Insere o novo estado na fila de prioridade
+                heapq.heappush(fila_prioridade, (prioridade, novo_custo, vizinho, novo_caminho))
+
+    # Caso o objetivo não seja encontrado, retorna a mensagem correspondente
+    return "Objetivo não encontrado."
+
+# Definição do grafo como um dicionário, onde cada nó tem uma lista de vizinhos
+grafo = {
+    "A": ["B", "C"],
+    "B": ["D"],
+    "D": ["F"],
+    "F": ["G"],
+    "C": ["E"],
+    "E": ["G"],
+    "G": []  # O nó G não tem vizinhos, é o objetivo
+}
+
+# Dicionário contendo valores heurísticos, que representam uma estimativa do custo até o objetivo "G"
+heuristica = {
+    "A": 4, "B": 2, "C": 3,
+    "D": 3, "E": 2, "F": 1, "G": 0  # O objetivo "G" tem heurística 0
+}
+
+# Dicionário de custos, onde cada chave (tupla) representa uma aresta e seu valor é o custo associado
+custos = {
+    ("A", "B"): 1, ("A", "C"): 4,
+    ("B", "D"): 2, ("D", "F"): 2,
+    ("F", "G"): 1, ("C", "E"): 3,
+    ("E", "G"): 2
+}
+
+# Chamada da função A* para encontrar o caminho de "A" até "G"
+resultado = a_star_search(grafo, heuristica, custos, "A", "G")
+
+# Exibe o resultado no console
+print(resultado)
